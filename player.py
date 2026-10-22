@@ -15,6 +15,7 @@ from constants import (
     PLAYER_JUMP_SPEED,
     PLAYER_SPEED,
     PLAYER_WIDTH,
+    PUMP_FAKE_FRAMES,
     SHOT_ANGLE_PROFILE,
     SHOT_MAX_POWER,
     SHOT_MIN_POWER,
@@ -41,6 +42,7 @@ class Player:
         self.has_ball = False
         self.charging = False
         self.charge = 0.0
+        self.pump_timer = 0
         self.released_shot = False
         self.steal_cooldown = 0
         self.swat_timer = 0
@@ -78,11 +80,21 @@ class Player:
     def reset_shot(self):
         self.charging = False
         self.charge = 0.0
+        self.pump_timer = 0
         self.released_shot = False
+
+    def pump_fake(self):
+        """Raise the ball like a shot, then pull it back without releasing."""
+        if not self.has_ball or self.charging or self.pump_timer > 0:
+            return False
+        self.pump_timer = PUMP_FAKE_FRAMES
+        return True
 
     def ball_anchor(self):
         """Where the ball sits while this player is holding it."""
         cx = self.center_x
+        if self.pump_timer > 0:
+            return cx + self.facing * 6, self.y - 9
         if self.charging:
             return cx + self.facing * 6, self.y - 6
         bob = math.sin(self.dribble_phase) * 5
@@ -115,6 +127,7 @@ class Player:
     # ------------------------------------------------------------------
     def update(self, inp, court_rect):
         self.released_shot = False
+        self.pump_timer = max(0, self.pump_timer - 1)
         self.steal_cooldown = max(0, self.steal_cooldown - 1)
         self.swat_timer = max(0, self.swat_timer - 1)
 
@@ -172,6 +185,12 @@ class Player:
 
     def _update_shot(self, inp):
         if not self.has_ball:
+            self.charging = False
+            self.charge = 0.0
+            return
+
+        if self.pump_timer > 0:
+            # The fake holds the ball up, so a shot input during it is ignored.
             self.charging = False
             self.charge = 0.0
             return
@@ -269,7 +288,7 @@ class Player:
         left_shoulder = (cx - 8, shoulder_y)
         right_shoulder = (cx + 8, shoulder_y)
 
-        if self.charging:
+        if self.charging or self.pump_timer > 0:
             hand_x, hand_y = self.ball_anchor()
             pygame.draw.line(screen, COLOR_SKIN, left_shoulder, (hand_x - 4, hand_y + 4), 5)
             pygame.draw.line(screen, COLOR_SKIN, right_shoulder, (hand_x + 4, hand_y + 4), 5)

@@ -95,12 +95,12 @@ class UI:
 
     def draw_controls(self, screen):
         left = self.font_small.render(
-            "P1   A / D move    W jump    S shoot & steal",
+            "P1   A/D move    W jump    S pump fake    F shoot & steal",
             True,
             COLOR_HUD_MUTED,
         )
         right = self.font_small.render(
-            "P2   \u2190 / \u2192 move    \u2191 jump    \u2193 shoot & steal",
+            "P2   \u2190/\u2192 move    \u2191 jump    RSHIFT pump fake    \u2193 shoot & steal",
             True,
             COLOR_HUD_MUTED,
         )

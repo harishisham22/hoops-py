@@ -17,11 +17,14 @@ python main.py
 | ------------------- | --------------- | --------------- |
 | Move                | `A` / `D`       | `←` / `→`       |
 | Jump                | `W`             | `↑`             |
-| Shoot / steal       | `S`             | `↓`             |
+| Pump fake           | `S`             | `RShift`        |
+| Shoot / steal       | `F`             | `↓`             |
 | Restart / quit      | `R` / `Esc`     | `R` / `Esc`     |
 
 - **Shoot:** hold the shoot key to charge, then release. The dotted arc shows
   where the ball will go, so release when the arc drops through the hoop.
+- **Pump fake:** tap the pump fake key to raise the ball without shooting.
+  You cannot start a shot until the fake finishes.
 - **Steal:** tap shoot while standing next to the ball carrier.
 - **Score:** each player attacks one hoop (blue attacks right, red attacks
   left). Baskets are worth 2 points, or 3 when the shot starts behind the

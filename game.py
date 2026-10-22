@@ -53,6 +53,7 @@ class Game:
         self.ball = Ball(self.court.rect.centerx, self.court.rect.top + 120)
 
         self.previous_shoot = [False, False]
+        self.previous_pump = [False, False]
         self.scores = [0, 0]
         self.frames_left = GAME_SECONDS * FPS
         self.state = "playing"
@@ -92,6 +93,7 @@ class Game:
         self.pause_timer = 0
         self.winner = None
         self.previous_shoot = [False, False]
+        self.previous_pump = [False, False]
         self._reset_positions()
         self.ui.flash("TIP OFF!", (255, 255, 255), 90)
 
@@ -118,10 +120,17 @@ class Game:
             return
 
         for index, player in enumerate(self.players):
-            state, shoot_down = read_input(
-                keys, PLAYER_CONTROLS[index], self.previous_shoot[index]
+            state, shoot_down, pump_down = read_input(
+                keys,
+                PLAYER_CONTROLS[index],
+                self.previous_shoot[index],
+                self.previous_pump[index],
             )
             self.previous_shoot[index] = shoot_down
+            self.previous_pump[index] = pump_down
+
+            if state.pump_pressed:
+                player.pump_fake()
 
             player.update(state, self.court.rect)
 

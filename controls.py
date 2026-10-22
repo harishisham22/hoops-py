@@ -11,21 +11,37 @@ class Controls:
     right: int
     jump: int
     shoot: int
+    pump: int
 
 
 PLAYER_CONTROLS = (
-    Controls(left=pygame.K_a, right=pygame.K_d, jump=pygame.K_w, shoot=pygame.K_s),
+    Controls(
+        left=pygame.K_a,
+        right=pygame.K_d,
+        jump=pygame.K_w,
+        shoot=pygame.K_f,
+        pump=pygame.K_s,
+    ),
     Controls(
         left=pygame.K_LEFT,
         right=pygame.K_RIGHT,
         jump=pygame.K_UP,
         shoot=pygame.K_DOWN,
+        pump=pygame.K_RSHIFT,
     ),
 )
 
 
 class InputState:
-    __slots__ = ("left", "right", "jump", "shoot_down", "shoot_pressed", "shoot_released")
+    __slots__ = (
+        "left",
+        "right",
+        "jump",
+        "shoot_down",
+        "shoot_pressed",
+        "shoot_released",
+        "pump_pressed",
+    )
 
     def __init__(self):
         self.left = False
@@ -34,13 +50,14 @@ class InputState:
         self.shoot_down = False
         self.shoot_pressed = False
         self.shoot_released = False
+        self.pump_pressed = False
 
 
-def read_input(keys, controls, was_shoot_down):
+def read_input(keys, controls, was_shoot_down, was_pump_down):
     """Build one player's input state for this frame.
 
-    Returns ``(state, shoot_down)`` so the caller can remember the previous
-    state and detect press/release edges next frame.
+    Returns ``(state, shoot_down, pump_down)`` so the caller can remember the
+    previous states and detect press/release edges next frame.
     """
     state = InputState()
     state.left = bool(keys[controls.left])
@@ -51,4 +68,7 @@ def read_input(keys, controls, was_shoot_down):
     state.shoot_down = down
     state.shoot_pressed = down and not was_shoot_down
     state.shoot_released = was_shoot_down and not down
-    return state, down
+
+    pump_down = bool(keys[controls.pump])
+    state.pump_pressed = pump_down and not was_pump_down
+    return state, down, pump_down
