@@ -10,6 +10,7 @@ from constants import (
     COLOR_BG,
     FPS,
     GAME_SECONDS,
+    INBOUND_DISTANCE,
     PLAYER_COLORS,
     SCORE_PAUSE,
     STEAL_COOLDOWN,
@@ -59,6 +60,7 @@ class Game:
         self.state = "playing"
         self.pause_timer = 0
         self.winner = None
+        self.inbound_player = None
 
         self._reset_positions()
         self.ui.flash("TIP OFF!", (255, 255, 255), 90)
@@ -92,6 +94,7 @@ class Game:
         self.state = "playing"
         self.pause_timer = 0
         self.winner = None
+        self.inbound_player = None
         self.previous_shoot = [False, False]
         self.previous_pump = [False, False]
         self._reset_positions()
@@ -107,10 +110,15 @@ class Game:
             return
 
         if self.state == "scored":
+            # Keep the ball live so it falls through the net and bounces while
+            # the players move to their inbound spots.
+            self.ball.update(self.court.rect, self.court.hoops)
             self.pause_timer -= 1
             if self.pause_timer <= 0:
                 self.state = "playing"
-                self._reset_positions()
+                inbound = self.players[self.inbound_player]
+                self._give_ball(inbound)
+                self.inbound_player = None
             return
 
         # Playing
@@ -237,10 +245,11 @@ class Game:
 
         self.state = "scored"
         self.pause_timer = SCORE_PAUSE
-        self.ball.vel.update(0, 0)
+        self.inbound_player = 1 - scorer_index
         for player in self.players:
             player.has_ball = False
             player.reset_shot()
+        self._set_inbound_positions(hoop)
 
         label = "3 POINTER!" if points == THREE_POINT_VALUE else "BUCKET!"
         self.ui.flash(f"{label}  {scorer.name} +{points}", scorer.color, SCORE_PAUSE)
@@ -253,11 +262,25 @@ class Game:
         else:
             self.winner = 0 if self.scores[0] > self.scores[1] else 1
 
+    def _set_inbound_positions(self, hoop):
+        """Send the conceding player under the scored hoop to inbound."""
+        court = self.court.rect
+        inbound = self.players[1 - hoop.owner]
+        inward = 1 if hoop.center_x < court.centerx else -1
+        center_x = hoop.center_x + inward * INBOUND_DISTANCE
+        inbound.place(center_x - inbound.width / 2)
+
+        # The scorer retreats to their own half while the inbound happens.
+        scorer = self.players[hoop.owner]
+        scorer.place(self._start_x(hoop.owner))
+
+    def _start_x(self, index):
+        court = self.court.rect
+        return court.left + court.width * (0.24 if index == 0 else 0.76)
+
     def _reset_positions(self):
-        left = self.court.rect.left
-        width = self.court.rect.width
-        self.players[0].place(left + width * 0.24)
-        self.players[1].place(left + width * 0.76)
+        for index, player in enumerate(self.players):
+            player.place(self._start_x(index))
 
         for player in self.players:
             player.has_ball = False

@@ -60,6 +60,7 @@ STEAL_COOLDOWN = 42
 # Game rules --------------------------------------------------------------
 GAME_SECONDS = 90
 SCORE_PAUSE = 85                # celebration frames after a made basket
+INBOUND_DISTANCE = 90           # px from the scored hoop toward midcourt
 TWO_POINT_VALUE = 2
 THREE_POINT_VALUE = 3
 

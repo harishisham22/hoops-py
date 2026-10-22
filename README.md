@@ -29,6 +29,8 @@ python main.py
 - **Score:** each player attacks one hoop (blue attacks right, red attacks
   left). Baskets are worth 2 points, or 3 when the shot starts behind the
   dashed three-point line.
+- **Inbound:** after a made basket, the ball drops through the net and the
+  conceding player restarts with it under that hoop.
 - **Game:** 90 seconds. The higher score wins; press `R` for a rematch.
 
 ## Project layout
