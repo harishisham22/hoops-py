@@ -40,7 +40,7 @@ PLAYER_ACCEL = 0.9
 PLAYER_FRICTION = 0.78
 PLAYER_JUMP_SPEED = -14.5
 PLAYER_GRAVITY = 0.82
-CHARGE_FRAMES = 75              # frames to reach a full-power shot
+CHARGE_FRAMES = 25              # frames to reach a full-power shot
 SHOT_MIN_POWER = 6.5
 SHOT_MAX_POWER = 20.5
 # Launch angle eases from a near-vertical lob under the rim to a flatter
